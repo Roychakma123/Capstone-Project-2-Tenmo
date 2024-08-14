@@ -86,27 +86,38 @@ public class App {
 
 	private void viewCurrentBalance() {
 		// TODO Auto-generated method stub
-		
+		// step 3
+        // initially 1000 TE bucks
 	}
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
-		
+		// step 5
+        // step 6
 	}
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		
+		// step 8
 	}
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
-		
+		// step 4
+        // declare and use a list of registered users
+        // print error if user tries to send money to themselves
+        // operators that handles the money increase/decreases
+        // try/catch for overdraft purposes
+        // no NULL allowed
+        // step 9
+
 	}
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
-		
+		// step 7
+        // step 9
 	}
 
+    //private void rejectTransfer(){}
 }
