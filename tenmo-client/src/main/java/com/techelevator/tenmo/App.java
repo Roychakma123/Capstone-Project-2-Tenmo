@@ -26,6 +26,7 @@ public class App {
             mainMenu();
         }
     }
+
     private void loginMenu() {
         int menuSelection = -1;
         while (menuSelection != 0 && currentUser == null) {
@@ -86,6 +87,32 @@ public class App {
 
 	private void viewCurrentBalance() {
 		// TODO Auto-generated method stub
+	}
+
+	private void viewTransferHistory() {
+		// TODO Auto-generated method stub
+	}
+
+	private void viewPendingRequests() {
+		// TODO Auto-generated method stub
+	}
+
+	private void sendBucks() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void requestBucks() {
+		// TODO Auto-generated method stub
+	}
+
+}
+
+
+
+
+/* private void viewCurrentBalance() {
+		// TODO Auto-generated method stub
 		// step 3
         // initially 1000 TE bucks
 	}
@@ -121,3 +148,4 @@ public class App {
 
     //private void rejectTransfer(){}
 }
+*/
