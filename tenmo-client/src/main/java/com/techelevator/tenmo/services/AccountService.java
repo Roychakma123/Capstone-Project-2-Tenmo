@@ -30,7 +30,7 @@ public class AccountService {
                     API_BASE_URL + "accounts/balance/" + accountId,
                     HttpMethod.GET,
                     makeAuthEntity(),
-                    BigDecimal.class   
+                    BigDecimal.class
             );
             if (response.getBody() != null) {
                 balance = response.getBody();

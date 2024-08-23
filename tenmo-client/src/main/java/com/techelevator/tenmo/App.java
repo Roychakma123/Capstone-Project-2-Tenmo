@@ -1,9 +1,13 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
+
+import java.math.BigDecimal;
 
 public class App {
 
@@ -86,7 +90,11 @@ public class App {
     }
 
 	private void viewCurrentBalance() {
-		// TODO Auto-generated method stub
+		System.out.println("You only have 3 bucks left, oh nooooo!");
+        System.out.println("Just kidding! Gotchu for a sec there didn't I? Hahaha.");
+        Transfer user = new Transfer();
+        user.getUserFromId();
+        System.out.println(user);
 	}
 
 	private void viewTransferHistory() {

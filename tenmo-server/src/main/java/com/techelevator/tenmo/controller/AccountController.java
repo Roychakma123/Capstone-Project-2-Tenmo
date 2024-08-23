@@ -17,11 +17,4 @@ import java.util.List;
 @RequestMapping("/accounts")
 public class AccountController {
 
-    private final AccountDao accountDao;
-
-    @Autowired
-    public AccountController(AccountDao accountDao) {
-        this.accountDao = accountDao;
-    }
-
 }

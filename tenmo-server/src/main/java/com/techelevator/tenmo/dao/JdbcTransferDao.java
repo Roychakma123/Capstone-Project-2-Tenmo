@@ -10,11 +10,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@Repository
+public class JdbcTransferDao  {
 
-//public class JdbcTransferDao implements TransferDao {
-  //  return null;
-
-    /*
     // RowMapper for Transfer class
     private static class TransferRowMapper implements RowMapper<Transfer> {
         @Override
@@ -29,4 +27,4 @@ import java.util.List;
             return transfer;
         }
     }
-*/
+}

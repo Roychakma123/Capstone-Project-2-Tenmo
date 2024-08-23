@@ -9,5 +9,4 @@ import java.util.List;
 public interface AccountDao {
 
     BigDecimal getBalanceByUsername(String username);
-
 }
