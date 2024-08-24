@@ -4,10 +4,13 @@ import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
+import com.techelevator.tenmo.services.UserService;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 
 public class App {
 
@@ -17,6 +20,9 @@ public class App {
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
+    private AccountService accountService;
+    private UserService userService;
+    private NumberFormat currency = NumberFormat.getCurrencyInstance();
 
     public static void main(String[] args) {
         App app = new App();
@@ -60,6 +66,8 @@ public class App {
     private void handleLogin() {
         UserCredentials credentials = consoleService.promptForCredentials();
         currentUser = authenticationService.login(credentials);
+        accountService = new AccountService(currentUser);
+        userService = new UserService(currentUser);
         if (currentUser == null) {
             consoleService.printErrorMessage();
         }
@@ -91,6 +99,7 @@ public class App {
 
 	private void viewCurrentBalance() {
         // TODO Auto-generated method stub
+        System.out.println(currency.format(accountService.getCurrentBalance()));
 	}
 
 	private void viewTransferHistory() {
@@ -103,6 +112,19 @@ public class App {
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
+        User[] users = userService.getUsers();
+        System.out.println("-".repeat(37));
+        System.out.println("Users");
+        System.out.printf("%-10s%10s %n", "ID", "Username");
+        System.out.println("-".repeat(37));
+        for(User user: users){
+            if(!currentUser.getUser().getUsername().equals(user.getUsername())) {
+
+                System.out.printf("%-10d%10s %n", user.getId(), user.getUsername());
+            }
+        }
+        System.out.println("-".repeat(10));
+
 
 	}
 
