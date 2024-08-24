@@ -22,9 +22,7 @@ public class ConsoleService {
     }
 
     public void printGreeting() {
-        System.out.println("*********************");
-        System.out.println("* Welcome to TEnmo! *");
-        System.out.println("*********************");
+        System.out.println("I love my team!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
 
     public void printLoginMenu() {

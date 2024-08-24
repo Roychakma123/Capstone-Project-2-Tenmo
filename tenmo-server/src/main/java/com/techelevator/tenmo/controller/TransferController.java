@@ -34,5 +34,24 @@ public class TransferController {
     }
 
 
-    
+    // Get a specific transfer by ID
+    @GetMapping("/{transferId}")
+    public Transfer getTransferById(@PathVariable int transferId) {
+        return transferDao.findById(transferId);
+    }
+
+
+    // Get all transfers by account ID
+    @GetMapping("/account/{accountId}")
+    public List<Transfer> getTransfersByAccountId(@PathVariable int accountId) {
+        return transferDao.findAllTransfersByAccountId(accountId);
+    }
+
+
+    // Get all transfers by username
+    @GetMapping("/user")
+    public List<Transfer> getTransfersByUsername(Principal principal) {
+        String username = principal.getName();
+        return transferDao.findAllTransfersByUsername(username);
+    }
 }

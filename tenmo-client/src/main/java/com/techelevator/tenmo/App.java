@@ -4,6 +4,7 @@ import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 
@@ -18,10 +19,12 @@ public class App {
 
     private AuthenticatedUser currentUser;
 
+
     public static void main(String[] args) {
         App app = new App();
         app.run();
     }
+
 
     private void run() {
         consoleService.printGreeting();
@@ -89,12 +92,12 @@ public class App {
         }
     }
 
-	private void viewCurrentBalance() {
-        // TODO Auto-generated method stub
-	}
+    private void viewCurrentBalance() {
+        // Hold for now
+    }
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+		// Hold for now
 	}
 
 	private void viewPendingRequests() {
