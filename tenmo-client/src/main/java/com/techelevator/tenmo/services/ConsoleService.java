@@ -22,27 +22,31 @@ public class ConsoleService {
     }
 
     public void printGreeting() {
-        System.out.println("*********************");
-        System.out.println("* Welcome to TEnmo! *");
-        System.out.println("*********************");
+        System.out.println("             WELCOME TO  ");
+        System.out.println();
+        System.out.println(" |__   __|  ____| \\ | |  \\/  |/ __ \\ ");
+        System.out.println("    | |  | |__  |  \\| | \\  / | |  | |");
+        System.out.println("    | |  |  __| | . ` | |\\/| | |  | |");
+        System.out.println("    | |  | |____| |\\  | |  | | |__| |");
+        System.out.println("    |_|  |______|_| \\_|_|  |_|\\____/ ");
     }
 
     public void printLoginMenu() {
         System.out.println();
-        System.out.println("1: Register");
-        System.out.println("2: Login");
-        System.out.println("0: Exit");
+        System.out.println("(1) Register");
+        System.out.println("(2) Login");
+        System.out.println("(0) Exit");
         System.out.println();
     }
 
     public void printMainMenu() {
         System.out.println();
-        System.out.println("1: View your current balance");
-        System.out.println("2: View your past transfers");
-        System.out.println("3: View your pending requests");
-        System.out.println("4: Send TE bucks");
-        System.out.println("5: Request TE bucks");
-        System.out.println("0: Exit");
+        System.out.println("(1)) View your current balance");
+        System.out.println("(2) View your past transfers");
+        System.out.println("(3) View your pending requests");
+        System.out.println("(4) Send TE bucks");
+        System.out.println("(5) Request TE bucks");
+        System.out.println("(0) Exit");
         System.out.println();
     }
 

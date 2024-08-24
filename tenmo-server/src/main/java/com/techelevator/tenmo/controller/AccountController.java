@@ -38,5 +38,33 @@ public class AccountController {
     }
 
 
+    // Get account info for the authenticated user
+    @GetMapping("/info")
+    public Account getAccountInfo(@AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        return accountDao.findByUsername(username);
+    }
 
+
+    // Get account by account ID
+    @GetMapping("/{accountId}")
+    public Account getAccountById(@PathVariable int accountId) {
+        return accountDao.findById(accountId);
+    }
+
+
+    // Get all accounts (admin access only)
+    @GetMapping
+    public List<Account> getAllAccounts() {
+        return accountDao.findAll();
+    }
+
+
+    // Transfer money between accounts
+    @PostMapping("/transfer")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Transfer transferMoney(@AuthenticationPrincipal UserDetails userDetails, @RequestBody Transfer transfer) {
+        String username = userDetails.getUsername();
+        return accountDao.transferMoney(username, transfer);
+    }
 }
