@@ -57,6 +57,21 @@ public class JdbcTransferDao implements TransferDao {
         return transfer;
     }
 
+    @Override
+    public Transfer findById(int transferId) {
+        return null;
+    }
+
+    @Override
+    public List<Transfer> findAllTransfersByAccountId(int accountId) {
+        return List.of();
+    }
+
+    @Override
+    public List<Transfer> findAllTransfersByUsername(String username) {
+        return List.of();
+    }
+
     // RowMapper for Transfer class
 
 
