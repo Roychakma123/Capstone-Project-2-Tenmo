@@ -18,7 +18,6 @@ public class Authority {
       this.name = name;
    }
 
-
    @Override
    public boolean equals(Object o) {
       if (this == o) return true;
@@ -35,7 +34,7 @@ public class Authority {
    @Override
    public String toString() {
       return "Authority{" +
-         "name=" + name +
-         '}';
+              "name=" + name +
+              '}';
    }
 }

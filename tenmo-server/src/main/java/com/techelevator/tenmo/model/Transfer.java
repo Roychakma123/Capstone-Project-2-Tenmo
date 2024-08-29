@@ -1,29 +1,41 @@
 package com.techelevator.tenmo.model;
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class Transfer {
+    private Integer transferId;
+    @NotNull(message = "The field `transferTypeId` should not be null.")
+    private Integer transferTypeId;
 
+    @NotNull(message = "The field `transferStatusId` should not be null.")
+    private Integer transferStatusId;
 
-    private int transferId;
-
-    private int transferTypeId;
-
-    private int transferStatusId;
-
-    private int accountFrom;
-
-    private int accountTo;
-
+    @NotNull(message = "The field `transferStatusId` should not be nullk.")
+    private Integer accountFromId;
+    @NotNull(message = "The field `accountToId` should not be null.")
+    private Integer accountToId;
+    @DecimalMin(value = "1.0", message = "The field `amount` should be greater than 0.")
     private BigDecimal amount;
 
-
     public Transfer() {
+    }
+
+    public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFromId, int accountToId, BigDecimal amount) {
         this.transferId = transferId;
         this.transferTypeId = transferTypeId;
         this.transferStatusId = transferStatusId;
-        this.accountFrom = accountFrom;
-        this.accountTo = accountTo;
+        this.accountFromId = accountFromId;
+        this.accountToId = accountToId;
+        this.amount = amount;
+    }
+    public Transfer(int transferTypeId, int transferStatusId, int accountFromId, int accountToId, BigDecimal amount) {
+        this.transferTypeId = transferTypeId;
+        this.transferStatusId = transferStatusId;
+        this.accountFromId = accountFromId;
+        this.accountToId = accountToId;
         this.amount = amount;
     }
 
@@ -51,20 +63,20 @@ public class Transfer {
         this.transferStatusId = transferStatusId;
     }
 
-    public int getAccountFrom() {
-        return accountFrom;
+    public int getAccountFromId() {
+        return accountFromId;
     }
 
-    public void setAccountFrom(int accountFrom) {
-        this.accountFrom = accountFrom;
+    public void setAccountFromId(int accountFromId) {
+        this.accountFromId = accountFromId;
     }
 
-    public int getAccountTo() {
-        return accountTo;
+    public int getAccountToId() {
+        return accountToId;
     }
 
-    public void setAccountTo(int accountTo) {
-        this.accountTo = accountTo;
+    public void setAccountToId(int accountToId) {
+        this.accountToId = accountToId;
     }
 
     public BigDecimal getAmount() {

@@ -2,48 +2,52 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.User;
-import com.techelevator.util.BasicLogger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 
 public class UserService {
-    private final RestTemplate restTemplate = new RestTemplate();
-    private static final String API_BASE_URL = "http://localhost:8080/user"; //double-check host
-    private String authenticationToken;
+    public static final String API_BASE_URL = "http://localhost:8080/user/";
+    private RestTemplate restTemplate = new RestTemplate();
 
-    public UserService(AuthenticatedUser currentUser) {
-        if (currentUser != null) {
-            this.authenticationToken = currentUser.getToken();
-        }
+    private String authToken = null;
+
+
+    public void setAuthToken(String token) {
+        this.authToken = token;
     }
-    public User[] getUsers(){
+
+    public User[] getUsers() {
         User[] users = null;
         try {
-            ResponseEntity<User[]> response = restTemplate.exchange(
-                    API_BASE_URL,
-                    HttpMethod.GET,
-                    makeAuthEntity(),
-                    User[].class
-            );
-            if (response.getBody() != null) {
-                users= response.getBody();
+            ResponseEntity<User[]> response =
+                    restTemplate.exchange(API_BASE_URL, HttpMethod.GET, makeAuthEntity(), User[].class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                users = response.getBody();
+            } else {
+                System.out.println("Error: " + response.getStatusCode() + " - " + response.getBody());
             }
-        } catch (RestClientException e) {
-            BasicLogger.log(e.getMessage());
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            System.out.println("Exception: " + e.getMessage());
         }
-
         return users;
     }
 
+
+
     private HttpEntity<Void> makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authenticationToken);
+        if (authToken != null) {
+            headers.setBearerAuth(authToken);
+        } else {
+            throw new IllegalStateException("Auth token not set");
+        }
         return new HttpEntity<>(headers);
     }
 }

@@ -1,201 +1,178 @@
 package com.techelevator.tenmo.services;
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
+import com.techelevator.tenmo.model.*;
+
 import com.techelevator.util.BasicLogger;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
+import org.springframework.http.*;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
+
 
 public class TransferService {
 
-    private static final String API_BASE_URL = "http://localhost:8080/"; // Adjust if necessary
-    private final RestTemplate restTemplate;
-    private final String authToken;
-    private final int currentUserId;
+    public static final String API_BASE_URL = "http://localhost:8080/transfer/";
+    private RestTemplate restTemplate = new RestTemplate();
 
-    public TransferService(AuthenticatedUser currentUser) {
-        this.restTemplate = new RestTemplate();
-        this.authToken = currentUser != null ? currentUser.getToken() : null;
-        this.currentUserId = currentUser != null && currentUser.getUser() != null ? currentUser.getUser().getId() : -1;
+    private String authToken = null;
+
+    public void setAuthToken(String token) {
+        this.authToken = token;
     }
 
-    public BigDecimal getAccountBalance() {
-        if (currentUserId == -1) {
-            BasicLogger.log("Invalid user ID");
-            return BigDecimal.ZERO;
-        }
 
+    //GET METHOD EXCHANGES
+    public TransferPendingDto[] getPending() {
+        TransferPendingDto[] pendingTransfers = null;
         try {
-            ResponseEntity<BigDecimal> response = restTemplate.exchange(
-                    API_BASE_URL + "accounts/balance/" + currentUserId,
-                    HttpMethod.GET,
-                    makeAuthEntity(),
-                    BigDecimal.class
-            );
-            return response.getBody() != null ? response.getBody() : BigDecimal.ZERO;
-        } catch (RestClientException e) {
-            BasicLogger.log(e.getMessage());
-            return BigDecimal.ZERO;
-        }
-    }
+            ResponseEntity<TransferPendingDto[]> response =
+                    restTemplate.exchange(API_BASE_URL + "pending", HttpMethod.GET, makeAuthEntity(), TransferPendingDto[].class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                pendingTransfers = response.getBody();
 
-    public List<User> getAllUsers() {
-        try {
-            ResponseEntity<User[]> response = restTemplate.exchange(
-                    API_BASE_URL + "users",
-                    HttpMethod.GET,
-                    makeAuthEntity(),
-                    User[].class
-            );
-            return response.getBody() != null ? Arrays.asList(response.getBody()) : null;
-        } catch (RestClientException e) {
-            BasicLogger.log(e.getMessage());
-            return null;
-        }
-    }
-
-    public boolean sendTransfer(int recipientUserId, BigDecimal amount) {
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            BasicLogger.log("Transfer amount must be greater than zero.");
-            return false;
-        }
-
-        Transfer transfer = new Transfer();
-        transfer.setUserFromId(currentUserId);
-        transfer.setUserToId(recipientUserId);
-        transfer.setAmount(amount);
-
-        try {
-            ResponseEntity<Transfer> response = restTemplate.exchange(
-                    API_BASE_URL + "transfers/send",
-                    HttpMethod.POST,
-                    makeAuthEntity(transfer),
-                    Transfer.class
-            );
-            return response.getBody() != null && "Approved".equals(response.getBody().getStatus());
-        } catch (RestClientException e) {
-            BasicLogger.log(e.getMessage());
-            return false;
-        }
-    }
-
-    public List<Transfer> viewTransfers() {
-        try {
-            ResponseEntity<Transfer[]> response = restTemplate.exchange(
-                    API_BASE_URL + "transfers",
-                    HttpMethod.GET,
-                    makeAuthEntity(),
-                    Transfer[].class
-            );
-            return response.getBody() != null ? Arrays.asList(response.getBody()) : null;
-        } catch (RestClientException e) {
-            BasicLogger.log(e.getMessage());
-            return null;
-        }
-    }
-
-    public Transfer viewTransferDetails(Long transferId) {
-        try {
-            ResponseEntity<Transfer> response = restTemplate.exchange(
-                    API_BASE_URL + "transfers/" + transferId,
-                    HttpMethod.GET,
-                    makeAuthEntity(),
-                    Transfer.class
-            );
-            return response.getBody();
-        } catch (RestClientException e) {
-            BasicLogger.log(e.getMessage());
-            return null;
-        }
-    }
-
-    public boolean requestTransfer(int senderUserId, BigDecimal amount) {
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            BasicLogger.log("Requested amount must be greater than zero.");
-            return false;
-        }
-
-        Transfer transfer = new Transfer();
-        transfer.setUserFromId(senderUserId);
-        transfer.setUserToId(currentUserId);
-        transfer.setAmount(amount);
-
-        try {
-            ResponseEntity<Transfer> response = restTemplate.exchange(
-                    API_BASE_URL + "transfers/request",
-                    HttpMethod.POST,
-                    makeAuthEntity(transfer),
-                    Transfer.class
-            );
-            return response.getBody() != null && "Pending".equals(response.getBody().getStatus());
-        } catch (RestClientException e) {
-            BasicLogger.log(e.getMessage());
-            return false;
-        }
-    }
-
-    public List<Transfer> viewPendingTransfers() {
-        try {
-            ResponseEntity<Transfer[]> response = restTemplate.exchange(
-                    API_BASE_URL + "transfers/pending",
-                    HttpMethod.GET,
-                    makeAuthEntity(),
-                    Transfer[].class
-            );
-            return response.getBody() != null ? Arrays.asList(response.getBody()) : null;
-        } catch (RestClientException e) {
-            BasicLogger.log(e.getMessage());
-            return null;
-        }
-    }
-
-    public boolean approveTransfer(Long transferId) {
-        return updateTransferStatus(transferId, "Approved");
-    }
-
-    public boolean rejectTransfer(Long transferId) {
-        return updateTransferStatus(transferId, "Rejected");
-    }
-
-    private boolean updateTransferStatus(Long transferId, String status) {
-        try {
-            Transfer transfer = viewTransferDetails(transferId);
-            if (transfer != null) {
-                transfer.setStatus(status);
-                restTemplate.exchange(
-                        API_BASE_URL + "transfers/" + transferId,
-                        HttpMethod.PUT,
-                        makeAuthEntity(transfer),
-                        Transfer.class
-                );
-                return true;
+            } else {
+                System.out.println("Error: " + response.getStatusCode() + " - " + response.getBody());
             }
-        } catch (RestClientException e) {
-            BasicLogger.log(e.getMessage());
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            System.out.println("Exception: " + e.getMessage());
         }
-        return false;
+        return pendingTransfers;
+    }
+
+    public TransferDto[] getTransfers() {
+        TransferDto[] transfers = null;
+        try {
+            ResponseEntity<TransferDto[]> response =
+                    restTemplate.exchange(API_BASE_URL, HttpMethod.GET, makeAuthEntity(), TransferDto[].class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                transfers = response.getBody();
+            } else {
+                System.out.println("Error: " + response.getStatusCode() + " - " + response.getBody());
+            }
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            System.out.println("Exception: " + e.getMessage());
+        }
+        return transfers;
+    }
+
+    public TransferDetailsDto getTransfersById(int transferId) {
+        TransferDetailsDto transfer = null;
+        try {
+            ResponseEntity<TransferDetailsDto> response =
+                    restTemplate.exchange(API_BASE_URL + "/" + transferId, HttpMethod.GET, makeAuthEntity(), TransferDetailsDto.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                transfer = response.getBody();
+            } else {
+                System.out.println("Error: " + response.getStatusCode() + " - " + response.getBody());
+            }
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            System.out.println("Exception: " + e.getMessage());
+        }
+        return transfer;
+    }
 
 
+    //POST METHODS EXCHANGES
+
+    public String requestTeBucks(int userId, int amount) {
+        TransferRequestDto transferRequestDto = new TransferRequestDto();
+        transferRequestDto.setUserTo(userId);
+        transferRequestDto.setAmount(BigDecimal.valueOf(amount));
+        String responseMessage = null;
+        try {
+            ResponseEntity<String> response =
+                    restTemplate.exchange(API_BASE_URL + "request", HttpMethod.POST, makeTransferRequestEntity(transferRequestDto), String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                responseMessage = response.getBody();
+            } else {
+                System.out.println("Error: " + response.getStatusCode() + " - " + response.getBody());
+            }
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            System.out.println("Exception: " + e.getMessage());
+        }
+        return responseMessage;
+    }
+
+    public String sendTeBucks(int userId, int amount) {
+        TransferRequestDto transferRequestDto = new TransferRequestDto();
+        transferRequestDto.setUserTo(userId);
+        transferRequestDto.setAmount(BigDecimal.valueOf(amount));
+        String responseMessage = null;
+        try {
+            ResponseEntity<String> response =
+                    restTemplate.exchange(API_BASE_URL + "send", HttpMethod.POST, makeTransferRequestEntity(transferRequestDto), String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                responseMessage = response.getBody();
+            } else {
+                System.out.println("Error: " + response.getStatusCode() + " - " + response.getBody());
+            }
+        } catch (RestClientResponseException e) {
+            BasicLogger.log(e.getMessage());
+            responseMessage = handleClientError(e);
+        } catch (ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+            responseMessage = "Network error occurred. Please try again later.";
+        }
+        return responseMessage;
+    }
+
+    public String approveOrRejectTransfer(int transferId, TransferStatus transferStatus) {
+        String responseMessage = null;
+        try {
+            ResponseEntity<String> response =
+                    restTemplate.exchange(API_BASE_URL + "/" + transferId + "/update_transfer", HttpMethod.PUT, makeTransferStatus(transferStatus), String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                responseMessage = response.getBody();
+            } else if (response.getStatusCode().is4xxClientError()) {
+                responseMessage = response.getBody();
+            }
+        } catch (RestClientResponseException e) {
+            BasicLogger.log(e.getMessage());
+            responseMessage = handleClientError(e);
+        } catch (ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+            responseMessage = "Network error occurred. Please try again later.";
+        }
+        return responseMessage;
+    }
+
+    private String handleClientError(RestClientResponseException e) {
+        if (e.getRawStatusCode() == HttpStatus.BAD_REQUEST.value()) {
+            String responseBody = e.getResponseBodyAsString();
+            if (responseBody.contains("Insufficient funds")) {
+                return "Insufficient funds for the transfer.";
+            } else {
+                return "There was an error with your request. Please check your input.";
+            }
+        }
+        return "An unexpected error occurred. Please try again later.";
+    }
+
+    private HttpEntity<TransferRequestDto> makeTransferRequestEntity(TransferRequestDto transferRequestDto) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(authToken);
+        return new HttpEntity<>(transferRequestDto, headers);
+    }
+
+    private HttpEntity<TransferStatus> makeTransferStatus(TransferStatus transferStatus) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(authToken);
+        return new HttpEntity<>(transferStatus, headers);
     }
 
     private HttpEntity<Void> makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
+        if (authToken != null) {
+            headers.setBearerAuth(authToken);
+        } else {
+            throw new IllegalStateException("Auth token not set");
+        }
         return new HttpEntity<>(headers);
     }
 
-    private <T> HttpEntity<T> makeAuthEntity(T body) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        return new HttpEntity<>(body, headers);
-    }
 }
