@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 
 public class TransferService {
 
-    public static final String API_BASE_URL = "http://localhost:8080/transfer/";
+    public static final String API_BASE_URL = "http://localhost:8080/transfer";
     private RestTemplate restTemplate = new RestTemplate();
 
     private String authToken = null;
@@ -28,7 +28,7 @@ public class TransferService {
         TransferPendingDto[] pendingTransfers = null;
         try {
             ResponseEntity<TransferPendingDto[]> response =
-                    restTemplate.exchange(API_BASE_URL + "pending", HttpMethod.GET, makeAuthEntity(), TransferPendingDto[].class);
+                    restTemplate.exchange(API_BASE_URL + "/pending", HttpMethod.GET, makeAuthEntity(), TransferPendingDto[].class);
             if (response.getStatusCode().is2xxSuccessful()) {
                 pendingTransfers = response.getBody();
 
@@ -45,7 +45,7 @@ public class TransferService {
         TransferDto[] transfers = null;
         try {
             ResponseEntity<TransferDto[]> response =
-                    restTemplate.exchange(API_BASE_URL, HttpMethod.GET, makeAuthEntity(), TransferDto[].class);
+                    restTemplate.exchange(API_BASE_URL + "/", HttpMethod.GET, makeAuthEntity(), TransferDto[].class);
             if (response.getStatusCode().is2xxSuccessful()) {
                 transfers = response.getBody();
             } else {
@@ -76,14 +76,14 @@ public class TransferService {
 
     //POST METHODS EXCHANGES
 
-    public String requestTeBucks(int userId, int amount) {
+    public String requestTeBucks(int userId, BigDecimal amount) {
         TransferRequestDto transferRequestDto = new TransferRequestDto();
         transferRequestDto.setUserTo(userId);
-        transferRequestDto.setAmount(BigDecimal.valueOf(amount));
+        transferRequestDto.setAmount(amount);
         String responseMessage = null;
         try {
             ResponseEntity<String> response =
-                    restTemplate.exchange(API_BASE_URL + "request", HttpMethod.POST, makeTransferRequestEntity(transferRequestDto), String.class);
+                    restTemplate.exchange(API_BASE_URL + "/request", HttpMethod.POST, makeTransferRequestEntity(transferRequestDto), String.class);
             if (response.getStatusCode().is2xxSuccessful()) {
                 responseMessage = response.getBody();
             } else {
@@ -95,14 +95,14 @@ public class TransferService {
         return responseMessage;
     }
 
-    public String sendTeBucks(int userId, int amount) {
+    public String sendTeBucks(int userId, BigDecimal amount) {
         TransferRequestDto transferRequestDto = new TransferRequestDto();
         transferRequestDto.setUserTo(userId);
-        transferRequestDto.setAmount(BigDecimal.valueOf(amount));
+        transferRequestDto.setAmount(amount);
         String responseMessage = null;
         try {
             ResponseEntity<String> response =
-                    restTemplate.exchange(API_BASE_URL + "send", HttpMethod.POST, makeTransferRequestEntity(transferRequestDto), String.class);
+                    restTemplate.exchange(API_BASE_URL + "/send", HttpMethod.POST, makeTransferRequestEntity(transferRequestDto), String.class);
             if (response.getStatusCode().is2xxSuccessful()) {
                 responseMessage = response.getBody();
             } else {

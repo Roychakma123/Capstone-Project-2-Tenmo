@@ -143,9 +143,8 @@ public class App {
         if (userId == 0) {
             return;
         }
-        int amount = consoleService.promptForInt("Enter amount: ");
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount: ");
         String response = transferService.sendTeBucks(userId, amount);
-        // Print the response only if it's not null
         if (response != null) {
             System.out.println(response);
         }
@@ -158,7 +157,7 @@ public class App {
         if (userId == 0) {
             return;
         }
-        int amount = consoleService.promptForInt("Enter amount: ");
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount: ");
         System.out.println(transferService.requestTeBucks(userId, amount));
     }
 

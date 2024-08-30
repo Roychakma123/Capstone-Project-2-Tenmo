@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import java.math.BigDecimal;
 
 public class UserService {
-    public static final String API_BASE_URL = "http://localhost:8080/user/";
+    public static final String API_BASE_URL = "http://localhost:8080/user";
     private RestTemplate restTemplate = new RestTemplate();
 
     private String authToken = null;
@@ -27,7 +27,7 @@ public class UserService {
         User[] users = null;
         try {
             ResponseEntity<User[]> response =
-                    restTemplate.exchange(API_BASE_URL, HttpMethod.GET, makeAuthEntity(), User[].class);
+                    restTemplate.exchange(API_BASE_URL + "/", HttpMethod.GET, makeAuthEntity(), User[].class);
             if (response.getStatusCode().is2xxSuccessful()) {
                 users = response.getBody();
             } else {
