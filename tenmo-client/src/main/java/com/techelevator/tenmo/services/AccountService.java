@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.User;
+import com.techelevator.util.BasicLogger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,6 +18,7 @@ public class AccountService {
     private RestTemplate restTemplate = new RestTemplate();
 
     private String authToken = null;
+    private BasicLogger BasicLoggerException;
 
 
     public void setAuthToken(String token) {
@@ -30,10 +32,11 @@ public class AccountService {
             if (response.getStatusCode().is2xxSuccessful()) {
                 balance = response.getBody();
             } else {
-                System.out.println("Error: " + response.getStatusCode() + " - " + response.getBody());
+                System.out.println("Sorry, we couldn't retrieve your balance at this time. Please try again later.");
             }
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println("Exception: " + e.getMessage());
+            String errorMessage = "Error retrieving balance: " + e.getMessage();
+            BasicLoggerException.log(errorMessage);
         }
         return balance;
     }
