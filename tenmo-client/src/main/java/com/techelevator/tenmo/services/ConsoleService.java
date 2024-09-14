@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 
 import com.techelevator.tenmo.model.*;
+import com.techelevator.util.BasicLogger;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
